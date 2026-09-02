@@ -11,5 +11,6 @@ public class threedensityEditorTarget : TargetRules
 		DefaultBuildSettings = BuildSettingsVersion.V6;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_7;
 		ExtraModuleNames.Add("TP_ThirdPerson");
+		bUseSharedPCHs = false;
 	}
 }

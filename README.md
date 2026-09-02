@@ -22,7 +22,7 @@ Or visit the **[game page](https://hyperlinksspace.github.io/threedensity/)** fo
 
 1. Download `ThreeDensity-Win64.zip` from [Releases](https://github.com/HyperlinksSpace/threedensity/releases/latest).
 2. Extract the ZIP to any folder.
-3. Run `ThreeDensity/Binaries/Win64/threedensity.exe`.
+3. Run `Windows/threedensity/Binaries/Win64/threedensity-Win64-Shipping.exe` (or double-click `Windows/threedensity.exe`).
 
 ## Controls
 
