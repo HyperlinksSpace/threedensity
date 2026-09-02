@@ -1,0 +1,29 @@
+# Unreal Engine
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+Build/
+Packaged/
+*.sln
+*.xcodeproj
+*.xcworkspace
+.vs/
+.vscode/
+*.VC.db
+*.opensdf
+*.opendb
+*.sdf
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Release artifacts (uploaded via GitHub Releases)
+*.zip
+*.7z
