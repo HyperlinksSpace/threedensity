@@ -186,12 +186,14 @@ public sealed class LauncherForm : Form
 
         DrawChromeButtons(g);
 
+        int copyTop = 188;
         if (lockupArt != null)
         {
-            int lw = Math.Min(520, (int)(lockupArt.Width * 0.88f));
-            int lh = (int)(lockupArt.Height * (lw / (float)lockupArt.Width));
-            var logoRect = new Rectangle(48, 88, lw, lh);
+            int lw = Math.Min(480, lockupArt.Width);
+            int lh = Math.Max(1, (int)(lockupArt.Height * (lw / (float)lockupArt.Width)));
+            var logoRect = new Rectangle(48, 72, lw, lh);
             g.DrawImage(lockupArt, logoRect);
+            copyTop = logoRect.Bottom + 18;
         }
         else if (markArt != null)
         {
@@ -199,17 +201,18 @@ public sealed class LauncherForm : Form
             using (var font = new Font("Segoe UI", 28f, FontStyle.Bold))
             using (var brush = new SolidBrush(Ink))
                 g.DrawString("THREE DENSITY", font, brush, 136, 92);
+            copyTop = 168;
         }
 
         using (var font = new Font("Segoe UI", 11f, FontStyle.Regular))
         using (var brush = new SolidBrush(Steel))
-            g.DrawString("Third-person combat · Unreal Engine 5.7", font, brush, 52, 196);
+            g.DrawString("Third-person combat · Unreal Engine 5.7", font, brush, 52, copyTop);
 
         if (!string.IsNullOrEmpty(versionText))
         {
             using (var font = new Font("Segoe UI", 8.5f, FontStyle.Bold))
             using (var brush = new SolidBrush(Ember))
-                g.DrawString(versionText.ToUpperInvariant(), font, brush, 52, 222);
+                g.DrawString(versionText.ToUpperInvariant(), font, brush, 52, copyTop + 26);
         }
 
         // Status panel
