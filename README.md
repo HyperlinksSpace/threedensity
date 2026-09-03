@@ -1,9 +1,5 @@
 <p align="center">
-  <img src="docs/media/logo-lockup.png" alt="Three Density" width="380">
-</p>
-
-<p align="center">
-  <img src="docs/media/shot-combat.jpg" alt="Third-person combat in a lava arena" width="100%">
+  <img src="docs/media/logo-lockup.png" alt="Three Density" width="520">
 </p>
 
 Third-person combat action. Fight through enemy pressure, master combos and charged strikes, and survive lava arenas.
