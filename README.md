@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/media/logo-lockup.png" alt="Three Density" width="420">
+  <img src="docs/media/logo-lockup.png" alt="Three Density" width="380">
 </p>
 
 <p align="center">
