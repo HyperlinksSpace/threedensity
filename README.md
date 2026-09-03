@@ -1,14 +1,12 @@
 <p align="center">
-  <img src="docs/media/logo-lockup.png" alt="Three Density logo" width="520">
+  <img src="docs/media/logo-lockup.png" alt="Three Density" width="420">
 </p>
-
-# Three Density
 
 <p align="center">
-  <img src="docs/media/cover.jpg" alt="Three Density — third-person combat" width="100%">
+  <img src="docs/media/shot-combat.jpg" alt="Third-person combat in a lava arena" width="100%">
 </p>
 
-**Three Density** is a third-person combat action game built with **Unreal Engine 5.7**. Fight through enemy pressure, master combos and charged strikes, and survive lava arenas.
+Third-person combat action, built with **Unreal Engine 5.7**. Fight through enemy pressure, master combos and charged strikes, and survive lava arenas.
 
 ## Download
 
