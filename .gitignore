@@ -33,3 +33,4 @@ Desktop.ini
 
 # Installer build scratch
 Installer/*.b64
+.vercel
