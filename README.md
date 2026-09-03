@@ -6,7 +6,7 @@
   <img src="docs/media/shot-combat.jpg" alt="Third-person combat in a lava arena" width="100%">
 </p>
 
-Third-person combat action, built with **Unreal Engine 5.7**. Fight through enemy pressure, master combos and charged strikes, and survive lava arenas.
+Third-person combat action. Fight through enemy pressure, master combos and charged strikes, and survive lava arenas.
 
 ## Download
 
@@ -50,8 +50,8 @@ Portable ZIP (optional): [ThreeDensity-Win64.zip](https://github.com/HyperlinksS
 
 ## Build from Source
 
-Requires Unreal Engine 5.7. Open `threedensity.uproject`, or package with `RunUAT BuildCookRun`.
+Open `threedensity.uproject`, or package with `RunUAT BuildCookRun`.
 
 ## License
 
-Game code follows the Unreal Engine EULA. Template content © Epic Games, Inc.
+Template content © Epic Games, Inc.

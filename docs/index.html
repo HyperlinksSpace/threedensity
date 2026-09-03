@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Three Density</title>
-  <meta name="description" content="Three Density — third-person combat on Unreal Engine 5.7. Download the launcher and play.">
+  <meta name="description" content="Three Density — third-person combat. Download the launcher and play.">
   <link rel="icon" href="media/favicon.ico?v=3" sizes="any">
   <link rel="icon" type="image/png" href="media/favicon-32.png?v=3" sizes="32x32">
   <link rel="icon" type="image/png" href="media/favicon-48.png?v=3" sizes="48x48">
@@ -12,7 +12,7 @@
   <link rel="apple-touch-icon" href="media/apple-touch-icon.png?v=3" sizes="256x256">
   <link rel="manifest" href="site.webmanifest">
   <meta property="og:title" content="Three Density">
-  <meta property="og:description" content="Third-person melee combat in a lava-cut arena. Built with Unreal Engine 5.7.">
+  <meta property="og:description" content="Third-person melee combat in a lava-cut arena.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://threedensity.hyperlinks.space/">
   <meta property="og:image" content="https://threedensity.hyperlinks.space/media/cover.jpg">
@@ -162,6 +162,22 @@
     .cta-note {
       color: var(--muted);
       font-size: .86rem;
+    }
+    .cta-release {
+      margin-top: 1rem;
+      color: var(--steel);
+      font-size: .92rem;
+      letter-spacing: .01em;
+    }
+    .cta-release strong {
+      color: var(--ink);
+      font-weight: 600;
+    }
+    .cta-release time {
+      display: block;
+      margin-top: .2rem;
+      color: var(--muted);
+      font-size: .84rem;
     }
     .cta-note a {
       color: var(--ember);
@@ -380,7 +396,7 @@
     <div class="hero-copy">
       <h1 class="sr-only">Three Density</h1>
       <img class="brand-logo" src="media/logo-lockup.png?v=3" width="520" height="216" alt="Three Density">
-      <p class="lede">Third-person melee combat in a lava-cut arena. Combos, charged strikes, and AI that presses back — built in Unreal Engine 5.7.</p>
+      <p class="lede">Third-person melee combat in a lava-cut arena. Combos, charged strikes, and AI that presses back.</p>
       <div class="cta-row">
         <a id="download-btn" class="cta" href="https://github.com/HyperlinksSpace/threedensity/releases/latest/download/ThreeDensitySetup.exe">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 19h14"/></svg>
@@ -388,6 +404,7 @@
         </a>
         <p class="cta-note">Updates on every launch · <a href="https://github.com/HyperlinksSpace/threedensity/releases/latest/download/ThreeDensity-Win64.zip">portable ZIP</a></p>
       </div>
+      <p id="release-meta" class="cta-release">Latest release loading…</p>
     </div>
     <div class="hero-scroll" aria-hidden="true">Scroll<i></i></div>
   </header>
@@ -443,7 +460,7 @@
   </section>
 
   <footer class="footer">
-    <span>HyperlinksSpace · Unreal Engine 5.7</span>
+    <span>HyperlinksSpace</span>
     <div>
       <a href="https://github.com/HyperlinksSpace/threedensity">Source</a>
       <a href="https://github.com/HyperlinksSpace/threedensity/releases">Releases</a>
@@ -480,8 +497,39 @@
         .then(function (data) {
           const setup = data.assets && data.assets.find(function (a) { return a.name === 'ThreeDensitySetup.exe'; });
           if (setup) document.getElementById('download-btn').href = setup.browser_download_url;
+
+          const meta = document.getElementById('release-meta');
+          if (!meta || !data.tag_name) return;
+
+          const tag = String(data.tag_name);
+          const published = data.published_at || data.created_at;
+          const when = published
+            ? new Date(published).toLocaleString(undefined, {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit'
+              })
+            : '';
+
+          meta.innerHTML = '';
+          const line = document.createElement('span');
+          line.innerHTML = 'Latest release <strong></strong>';
+          line.querySelector('strong').textContent = tag;
+          meta.appendChild(line);
+          if (when) {
+            const time = document.createElement('time');
+            time.dateTime = published;
+            time.textContent = when;
+            meta.appendChild(time);
+          }
         })
-        .catch(function () {});
+        .catch(function () {
+          const meta = document.getElementById('release-meta');
+          if (meta) meta.textContent = 'Latest release unavailable';
+        });
     })();
   </script>
 </body>

@@ -206,7 +206,7 @@ public sealed class LauncherForm : Form
 
         using (var font = new Font("Segoe UI", 11f, FontStyle.Regular))
         using (var brush = new SolidBrush(Steel))
-            g.DrawString("Third-person combat · Unreal Engine 5.7", font, brush, 52, copyTop);
+            g.DrawString("Third-person combat", font, brush, 52, copyTop);
 
         if (!string.IsNullOrEmpty(versionText))
         {
