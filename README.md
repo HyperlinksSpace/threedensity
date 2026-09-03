@@ -12,9 +12,9 @@
 
 ## Download
 
-**[Download the Windows installer](https://github.com/HyperlinksSpace/threedensity/releases/latest/download/ThreeDensitySetup.exe)** (~15 KB)
+**[Download the Windows launcher](https://github.com/HyperlinksSpace/threedensity/releases/latest/download/ThreeDensitySetup.exe)**
 
-The installer fetches the latest full build, installs it, and creates a desktop shortcut.
+The launcher installs the game, creates a desktop shortcut, and **checks GitHub for updates on every launch** before starting.
 
 Game page: **[hyperlinksspace.github.io/threedensity](https://hyperlinksspace.github.io/threedensity/)**
 
