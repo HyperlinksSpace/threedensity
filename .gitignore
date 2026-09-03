@@ -3,8 +3,11 @@ Binaries/
 DerivedDataCache/
 Intermediate/
 Saved/
-Build/
 Packaged/
+Build/*
+!Build/Windows/
+Build/Windows/*
+!Build/Windows/Application.ico
 *.sln
 *.xcodeproj
 *.xcworkspace
@@ -27,3 +30,6 @@ Desktop.ini
 # Release artifacts (uploaded via GitHub Releases)
 *.zip
 *.7z
+
+# Installer build scratch
+Installer/*.b64

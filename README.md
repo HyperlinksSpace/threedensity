@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/media/logo-lockup.png" alt="Three Density logo" width="520">
+</p>
+
 # Three Density
 
 <p align="center">

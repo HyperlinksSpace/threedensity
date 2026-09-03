@@ -20,7 +20,8 @@ public class TP_ThirdPerson : ModuleRules
 			"UMG",
 			"Slate",
 			"SlateCore",
-			"RHI"
+			"RHI",
+			"ImageWrapper"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });

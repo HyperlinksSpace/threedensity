@@ -12,7 +12,8 @@
 #include "Widgets/Input/SSlider.h"
 #include "Widgets/SOverlay.h"
 #include "Widgets/SNullWidget.h"
-#include "Styling/CoreStyle.h"
+#include "Widgets/Images/SImage.h"
+#include "ThreeDensityLogo.h"
 #include "Engine/Engine.h"
 
 namespace
@@ -92,6 +93,22 @@ void SThreeDensityHUDWidget::Construct(const FArguments& InArgs)
 				]
 			]
 		]
+		+ SOverlay::Slot().VAlign(VAlign_Top).HAlign(HAlign_Left).Padding(24)
+		[
+			SNew(SBox)
+			.WidthOverride(48)
+			.HeightOverride(48)
+			.Visibility(this, &SThreeDensityHUDWidget::GetHintVisibility)
+			[
+				SNew(SImage)
+				.Image_Lambda([]() -> const FSlateBrush*
+				{
+					TSharedPtr<FSlateBrush> Brush = ThreeDensityLogo::GetMarkBrush();
+					return Brush.IsValid() ? Brush.Get() : FCoreStyle::Get().GetDefaultBrush();
+				})
+				.ColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 0.85f))
+			]
+		]
 		+ SOverlay::Slot().VAlign(VAlign_Top).HAlign(HAlign_Right).Padding(24)
 		[
 			SNew(STextBlock)
@@ -136,9 +153,20 @@ TSharedRef<SWidget> SThreeDensityHUDWidget::BuildPauseMenu()
 					SNew(SBox).WidthOverride(210)
 					[
 						SNew(SVerticalBox)
-						+ SVerticalBox::Slot().AutoHeight().Padding(0, 0, 0, 18)
+						+ SVerticalBox::Slot().AutoHeight().Padding(0, 0, 0, 12)
 						[
-							Label(TEXT("THREE DENSITY"), 18, Ember)
+							SNew(SBox)
+							.WidthOverride(200)
+							.HeightOverride(64)
+							.HAlign(HAlign_Left)
+							[
+								SNew(SImage)
+								.Image_Lambda([]() -> const FSlateBrush*
+								{
+									TSharedPtr<FSlateBrush> Brush = ThreeDensityLogo::GetLockupBrush();
+									return Brush.IsValid() ? Brush.Get() : FCoreStyle::Get().GetDefaultBrush();
+								})
+							]
 						]
 						+ SVerticalBox::Slot().AutoHeight().Padding(0, 0, 0, 22)
 						[

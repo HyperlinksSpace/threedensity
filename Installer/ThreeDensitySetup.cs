@@ -4,8 +4,6 @@ using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -25,7 +23,7 @@ public sealed class SetupForm : Form
     const string ApiUrl = "https://api.github.com/repos/HyperlinksSpace/threedensity/releases/latest";
     const string FallbackZip = "https://github.com/HyperlinksSpace/threedensity/releases/latest/download/ThreeDensity-Win64.zip";
 
-    readonly Label title;
+    readonly PictureBox logo;
     readonly Label subtitle;
     readonly Label status;
     readonly ProgressBar progress;
@@ -41,57 +39,81 @@ public sealed class SetupForm : Form
         MaximizeBox = false;
         MinimizeBox = false;
         StartPosition = FormStartPosition.CenterScreen;
-        ClientSize = new Size(520, 320);
-        BackColor = Color.FromArgb(18, 18, 16);
+        ClientSize = new Size(540, 390);
+        BackColor = Color.FromArgb(12, 12, 11);
         ForeColor = Color.FromArgb(230, 224, 214);
         Font = new Font("Segoe UI", 10f);
 
+        try
+        {
+            Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+        }
+        catch
+        {
+        }
+
         installDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ThreeDensity");
 
-        title = new Label
+        logo = new PictureBox
+        {
+            Bounds = new Rectangle(24, 18, 72, 72),
+            SizeMode = PictureBoxSizeMode.Zoom,
+            BackColor = Color.Transparent
+        };
+        try
+        {
+            logo.Image = LogoData.LoadMark();
+        }
+        catch
+        {
+        }
+
+        Label title = new Label
         {
             AutoSize = false,
-            Bounds = new Rectangle(28, 24, 460, 40),
+            Bounds = new Rectangle(110, 28, 400, 36),
             Font = new Font("Segoe UI", 22f, FontStyle.Bold),
-            ForeColor = Color.FromArgb(232, 140, 64),
+            ForeColor = Color.FromArgb(243, 238, 230),
             Text = "THREE DENSITY"
         };
         subtitle = new Label
         {
             AutoSize = false,
-            Bounds = new Rectangle(28, 68, 460, 40),
+            Bounds = new Rectangle(110, 66, 400, 40),
             ForeColor = Color.FromArgb(170, 166, 158),
-            Text = "Small installer. Downloads the latest Windows build\nand sets up a shortcut on your desktop."
+            Text = "Installer downloads the latest Windows build\nand creates a desktop shortcut."
         };
         status = new Label
         {
             AutoSize = false,
-            Bounds = new Rectangle(28, 128, 460, 40),
+            Bounds = new Rectangle(28, 180, 480, 40),
             Text = "Ready to install."
         };
         progress = new ProgressBar
         {
-            Bounds = new Rectangle(28, 176, 464, 18),
+            Bounds = new Rectangle(28, 230, 484, 18),
             Style = ProgressBarStyle.Continuous
         };
         launchWhenDone = new CheckBox
         {
-            Bounds = new Rectangle(28, 210, 300, 24),
+            Bounds = new Rectangle(28, 268, 300, 24),
             Checked = true,
             ForeColor = Color.FromArgb(200, 196, 188),
             Text = "Launch game when finished"
         };
         action = new Button
         {
-            Bounds = new Rectangle(28, 250, 160, 36),
+            Bounds = new Rectangle(28, 310, 170, 40),
             FlatStyle = FlatStyle.Flat,
             BackColor = Color.FromArgb(196, 92, 28),
             ForeColor = Color.White,
+            Font = new Font("Segoe UI", 11f, FontStyle.Bold),
             Text = "Install"
         };
         action.FlatAppearance.BorderSize = 0;
         action.Click += StartInstallClick;
 
+        Controls.Add(logo);
         Controls.Add(title);
         Controls.Add(subtitle);
         Controls.Add(status);
@@ -220,14 +242,14 @@ public sealed class SetupForm : Form
         using (var client = new WebClient())
         {
             client.Headers[HttpRequestHeader.UserAgent] = "ThreeDensitySetup";
-            client.DownloadProgressChanged += (_, e) =>
+            client.DownloadProgressChanged += (s, e) =>
             {
                 int pct = 10 + (int)(e.ProgressPercentage * 0.7);
                 SetStatus(string.Format("Downloading… {0}%", e.ProgressPercentage), pct);
             };
             var done = new ManualResetEvent(false);
             Exception error = null;
-            client.DownloadFileCompleted += (_, e) =>
+            client.DownloadFileCompleted += (s, e) =>
             {
                 error = e.Error;
                 done.Set();
@@ -256,6 +278,11 @@ public sealed class SetupForm : Form
         st.InvokeMember("TargetPath", System.Reflection.BindingFlags.SetProperty, null, shortcut, new object[] { target });
         st.InvokeMember("WorkingDirectory", System.Reflection.BindingFlags.SetProperty, null, shortcut, new object[] { Path.GetDirectoryName(target) });
         st.InvokeMember("Description", System.Reflection.BindingFlags.SetProperty, null, shortcut, new object[] { "Three Density" });
+        string ico = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath) ?? "", "ThreeDensity.ico");
+        if (File.Exists(ico))
+        {
+            st.InvokeMember("IconLocation", System.Reflection.BindingFlags.SetProperty, null, shortcut, new object[] { ico });
+        }
         st.InvokeMember("Save", System.Reflection.BindingFlags.InvokeMethod, null, shortcut, null);
     }
 
