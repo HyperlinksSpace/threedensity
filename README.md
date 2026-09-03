@@ -14,7 +14,7 @@ Third-person combat action, built with **Unreal Engine 5.7**. Fight through enem
 
 The launcher installs the game, creates a desktop shortcut, and **checks GitHub for updates on every launch** before starting.
 
-Game page: **[hyperlinksspace.github.io/threedensity](https://hyperlinksspace.github.io/threedensity/)**
+Game page: **[threedensity.hyperlinks.space](https://threedensity.hyperlinks.space/)**
 
 Portable ZIP (optional): [ThreeDensity-Win64.zip](https://github.com/HyperlinksSpace/threedensity/releases/latest/download/ThreeDensity-Win64.zip)
 
