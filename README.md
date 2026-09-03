@@ -1,5 +1,9 @@
 # Three Density
 
+<p align="center">
+  <img src="docs/media/cover.jpg" alt="Three Density — third-person combat" width="100%">
+</p>
+
 **Three Density** is a third-person combat action game built with **Unreal Engine 5.7**. Fight through enemy pressure, master combos and charged strikes, and survive lava arenas.
 
 ## Download
