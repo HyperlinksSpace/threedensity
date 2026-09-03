@@ -16,7 +16,7 @@ enum class EThreeDensityGraphicsPreset : uint8
 };
 
 /**
- * Saves graphics choices and applies hardware-based defaults on first launch.
+ * Saves graphics choices, hardware defaults, and runtime FPS benchmarks.
  */
 UCLASS(config = GameUserSettings, configdonotcheckdefaults)
 class UThreeDensityGameUserSettings : public UGameUserSettings
@@ -34,7 +34,9 @@ public:
 
 	FString GetDetectedHardwareSummary() const;
 
-	/** First launch: auto-pick. Later launches: restore saved settings. */
+	FString GetBenchmarkSummary() const;
+
+	/** First launch / settings version bump: auto-pick. Later: restore. */
 	void ApplyOnStartup();
 
 	void ApplyGraphicsPreset(EThreeDensityGraphicsPreset Preset, bool bFromAutoDetect);
@@ -49,6 +51,11 @@ public:
 
 	bool WasAutoDetected() const { return bLastApplyWasAuto; }
 
+	/** Record measured average FPS and optionally drop quality if too slow. */
+	void ApplyBenchmarkResult(float AverageFPS, bool bAutoAdjust);
+
+	float GetLastBenchmarkFPS() const { return LastBenchmarkFPS; }
+
 	virtual void ApplyNonResolutionSettings() override;
 
 protected:
@@ -58,6 +65,10 @@ protected:
 	UPROPERTY(config)
 	bool bHasAppliedHardwareProfile = false;
 
+	/** Bump to force re-auto-detect after quality retunes. */
+	UPROPERTY(config)
+	int32 GraphicsSettingsVersion = 0;
+
 	UPROPERTY(config)
 	EThreeDensityGraphicsPreset GraphicsPreset = EThreeDensityGraphicsPreset::Medium;
 
@@ -65,8 +76,11 @@ protected:
 	bool bLumenEnabled = false;
 
 	UPROPERTY(config)
-	int32 MaxFPS = 60;
+	int32 MaxFPS = 120;
 
 	UPROPERTY(config)
 	bool bLastApplyWasAuto = true;
+
+	UPROPERTY(config)
+	float LastBenchmarkFPS = 0.0f;
 };

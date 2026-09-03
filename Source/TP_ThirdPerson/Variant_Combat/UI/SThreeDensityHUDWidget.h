@@ -32,6 +32,7 @@ private:
 	FReply OnTabSettings();
 	FReply OnPreset(int32 PresetIndex);
 	FReply OnAutoDetect();
+	FReply OnBenchmark();
 	FReply OnToggleLumen();
 	FReply OnToggleVSync();
 	FReply OnFpsCap(int32 Cap);
@@ -45,6 +46,7 @@ private:
 	EVisibility GetSettingsVisibility() const;
 	FText GetTipText() const;
 	FText GetHardwareText() const;
+	FText GetBenchmarkText() const;
 	FText GetPresetLabel() const;
 	FText GetLumenLabel() const;
 	FText GetVSyncLabel() const;

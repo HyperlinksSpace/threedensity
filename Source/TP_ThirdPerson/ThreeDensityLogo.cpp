@@ -2,6 +2,7 @@
 
 #include "ThreeDensityLogo.h"
 #include "Engine/Texture2D.h"
+#include "TextureResource.h"
 #include "IImageWrapper.h"
 #include "IImageWrapperModule.h"
 #include "Misc/FileHelper.h"

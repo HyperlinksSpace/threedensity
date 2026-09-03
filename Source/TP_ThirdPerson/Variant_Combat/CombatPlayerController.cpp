@@ -16,6 +16,8 @@
 #include "Widgets/Input/SVirtualJoystick.h"
 #include "SThreeDensityHUDWidget.h"
 #include "InputCoreTypes.h"
+#include "Components/InputComponent.h"
+#include "GameFramework/PlayerInput.h"
 
 void ACombatPlayerController::BeginPlay()
 {
@@ -163,7 +165,7 @@ FText ACombatPlayerController::GetCurrentTipText() const
 	case 1:
 		return FText::FromString(TEXT("Left click chains a combo. Hold right click to charge a heavy strike."));
 	case 2:
-		return FText::FromString(TEXT("Space jumps. Q swaps camera shoulder. Watch the lava — it kills."));
+		return FText::FromString(TEXT("Space jumps. Q swaps camera shoulder. Mouse wheel zooms. Watch the lava — it kills."));
 	default:
 		return FText::FromString(TEXT("Press ESC anytime for the full control cookbook and graphics settings."));
 	}

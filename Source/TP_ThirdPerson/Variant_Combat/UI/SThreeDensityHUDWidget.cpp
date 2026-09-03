@@ -3,6 +3,7 @@
 #include "SThreeDensityHUDWidget.h"
 #include "Variant_Combat/CombatPlayerController.h"
 #include "ThreeDensityGameUserSettings.h"
+#include "ThreeDensityGameInstance.h"
 #include "Widgets/Layout/SBorder.h"
 #include "Widgets/Layout/SBox.h"
 #include "Widgets/Layout/SScrollBox.h"
@@ -257,6 +258,7 @@ TSharedRef<SWidget> SThreeDensityHUDWidget::BuildControlsPanel()
 		+ SScrollBox::Slot() [ ControlRow(TEXT("Combo attack"), TEXT("Left mouse"), TEXT("RT / R2")) ]
 		+ SScrollBox::Slot() [ ControlRow(TEXT("Charged strike"), TEXT("Hold right mouse"), TEXT("Hold RB / R1")) ]
 		+ SScrollBox::Slot() [ ControlRow(TEXT("Camera shoulder"), TEXT("Q"), TEXT("L1 / LB")) ]
+		+ SScrollBox::Slot() [ ControlRow(TEXT("Zoom in / out"), TEXT("Mouse wheel  ·  - / ="), TEXT("—")) ]
 		+ SScrollBox::Slot() [ ControlRow(TEXT("Pause / this menu"), TEXT("Esc"), TEXT("Start")) ]
 		+ SScrollBox::Slot() [ ControlRow(TEXT("Toggle fullscreen"), TEXT("Alt + Enter"), TEXT("—")) ]
 	]
@@ -285,6 +287,14 @@ TSharedRef<SWidget> SThreeDensityHUDWidget::BuildSettingsPanel()
 		.ColorAndOpacity(Muted)
 		.AutoWrapText(true)
 	]
+	+ SVerticalBox::Slot().AutoHeight().Padding(0, 0, 0, 12)
+	[
+		SNew(STextBlock)
+		.Text(this, &SThreeDensityHUDWidget::GetBenchmarkText)
+		.Font(FCoreStyle::GetDefaultFontStyle("Regular", 12))
+		.ColorAndOpacity(Muted)
+		.AutoWrapText(true)
+	]
 	+ SVerticalBox::Slot().AutoHeight().Padding(0, 0, 0, 8)
 	[
 		SNew(STextBlock)
@@ -299,6 +309,11 @@ TSharedRef<SWidget> SThreeDensityHUDWidget::BuildSettingsPanel()
 		[
 			SNew(SButton).OnClicked(this, &SThreeDensityHUDWidget::OnAutoDetect).ButtonColorAndOpacity(IdleBtn)
 			[ Label(TEXT("AUTO"), 12, Ember) ]
+		]
+		+ SHorizontalBox::Slot().AutoWidth().Padding(0, 0, 6, 0)
+		[
+			SNew(SButton).OnClicked(this, &SThreeDensityHUDWidget::OnBenchmark).ButtonColorAndOpacity(IdleBtn)
+			[ Label(TEXT("BENCHMARK"), 12, Ember) ]
 		]
 		+ SHorizontalBox::Slot().AutoWidth().Padding(0, 0, 6, 0)
 		[
@@ -449,6 +464,21 @@ FReply SThreeDensityHUDWidget::OnAutoDetect()
 	return FReply::Handled();
 }
 
+FReply SThreeDensityHUDWidget::OnBenchmark()
+{
+	if (GEngine)
+	{
+		if (UWorld* World = GEngine->GetCurrentPlayWorld())
+		{
+			if (UThreeDensityGameInstance* GI = Cast<UThreeDensityGameInstance>(World->GetGameInstance()))
+			{
+				GI->StartPerformanceBenchmark(true);
+			}
+		}
+	}
+	return FReply::Handled();
+}
+
 FReply SThreeDensityHUDWidget::OnToggleLumen()
 {
 	if (UThreeDensityGameUserSettings* S = UThreeDensityGameUserSettings::GetThreeDensitySettings())
@@ -558,6 +588,15 @@ FText SThreeDensityHUDWidget::GetHardwareText() const
 	if (UThreeDensityGameUserSettings* S = UThreeDensityGameUserSettings::GetThreeDensitySettings())
 	{
 		return FText::FromString(S->GetDetectedHardwareSummary());
+	}
+	return FText::GetEmpty();
+}
+
+FText SThreeDensityHUDWidget::GetBenchmarkText() const
+{
+	if (UThreeDensityGameUserSettings* S = UThreeDensityGameUserSettings::GetThreeDensitySettings())
+	{
+		return FText::FromString(S->GetBenchmarkSummary());
 	}
 	return FText::GetEmpty();
 }

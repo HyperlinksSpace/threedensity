@@ -22,7 +22,8 @@ Portable ZIP (optional): [ThreeDensity-Win64.zip](https://github.com/HyperlinksS
 
 - **Esc / Start** — pause menu with full **controls cookbook** and **graphics settings**
 - Onboarding tips appear in the first moments of play
-- First launch **auto-detects your GPU/RAM** and applies Low / Medium / High / Epic (you can retune anytime)
+- First launch **auto-detects your GPU/RAM**, runs a short **FPS benchmark**, and applies Low / Medium / High / Epic (you can retune anytime)
+- **Mouse wheel** (or `-` / `=`) zooms the camera in and out
 
 ## Controls
 
@@ -34,6 +35,7 @@ Portable ZIP (optional): [ThreeDensity-Win64.zip](https://github.com/HyperlinksS
 | Combo attack | Left Mouse | RT / R2 |
 | Charged strike | Hold Right Mouse | Hold RB / R1 |
 | Camera shoulder | Q | LB / L1 |
+| Zoom in / out | Mouse wheel · `-` / `=` | — |
 | Menu | Esc | Start |
 
 ## System Requirements

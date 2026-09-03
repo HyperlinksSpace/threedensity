@@ -165,12 +165,34 @@ protected:
 	bool bHasLoopedChargedAttack = false;
 
 	/** Camera boom length while the character is dead */
-	UPROPERTY(EditAnywhere, Category="Camera", meta = (ClampMin = 0, ClampMax = 1000, Units = "cm"))
-	float DeathCameraDistance = 400.0f;
+	UPROPERTY(EditAnywhere, Category="Camera", meta = (ClampMin = 0, ClampMax = 1200, Units = "cm"))
+	float DeathCameraDistance = 450.0f;
 
-	/** Camera boom length when the character respawns */
-	UPROPERTY(EditAnywhere, Category="Camera", meta = (ClampMin = 0, ClampMax = 1000, Units = "cm"))
-	float DefaultCameraDistance = 100.0f;
+	/** Camera boom length when the character respawns / default play distance */
+	UPROPERTY(EditAnywhere, Category="Camera", meta = (ClampMin = 50, ClampMax = 800, Units = "cm"))
+	float DefaultCameraDistance = 280.0f;
+
+	/** Closest camera boom length (zoom in) */
+	UPROPERTY(EditAnywhere, Category="Camera", meta = (ClampMin = 50, ClampMax = 400, Units = "cm"))
+	float MinCameraDistance = 120.0f;
+
+	/** Farthest camera boom length (zoom out) */
+	UPROPERTY(EditAnywhere, Category="Camera", meta = (ClampMin = 200, ClampMax = 1000, Units = "cm"))
+	float MaxCameraDistance = 560.0f;
+
+	/** How far each mouse-wheel notch moves the camera */
+	UPROPERTY(EditAnywhere, Category="Camera", meta = (ClampMin = 5, ClampMax = 120, Units = "cm"))
+	float ZoomStep = 40.0f;
+
+	/** Smooth follow speed toward the desired zoom distance */
+	UPROPERTY(EditAnywhere, Category="Camera", meta = (ClampMin = 1, ClampMax = 30))
+	float ZoomInterpSpeed = 10.0f;
+
+	/** Desired SpringArm length the camera interpolates toward */
+	float DesiredCameraDistance = 280.0f;
+
+	/** True while dead — blocks player zoom */
+	bool bCameraZoomLocked = false;
 
 	/** Time to wait before respawning the character */
 	UPROPERTY(EditAnywhere, Category="Respawn", meta = (ClampMin = 0, ClampMax = 10, Units = "s"))
@@ -209,6 +231,18 @@ protected:
 
 	/** Called for toggle camera side input */
 	void ToggleCamera();
+
+	/** Mouse wheel / key zoom axis (positive = zoom out) */
+	void ZoomAxis(float AxisValue);
+
+	/** Zoom in one step (keys / UI) */
+	void ZoomIn();
+
+	/** Zoom out one step (keys / UI) */
+	void ZoomOut();
+
+	/** Apply a relative zoom delta in centimeters */
+	void ApplyZoomDelta(float DeltaCm);
 
 	/** BP hook to animate the camera side switch */
 	UFUNCTION(BlueprintImplementableEvent, Category="Combat")
@@ -314,6 +348,9 @@ protected:
 
 	/** Initialization */
 	virtual void BeginPlay() override;
+
+	/** Smooth camera zoom */
+	virtual void Tick(float DeltaSeconds) override;
 
 	/** Cleanup */
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;

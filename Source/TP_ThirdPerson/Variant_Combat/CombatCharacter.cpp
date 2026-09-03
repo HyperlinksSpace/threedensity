@@ -15,6 +15,8 @@
 #include "TimerManager.h"
 #include "Engine/LocalPlayer.h"
 #include "CombatPlayerController.h"
+#include "InputCoreTypes.h"
+#include "Components/InputComponent.h"
 
 ACombatCharacter::ACombatCharacter()
 {
@@ -37,6 +39,10 @@ ACombatCharacter::ACombatCharacter()
 	CameraBoom->bUsePawnControlRotation = true;
 	CameraBoom->bEnableCameraLag = true;
 	CameraBoom->bEnableCameraRotationLag = true;
+	CameraBoom->CameraLagSpeed = 12.0f;
+	CameraBoom->CameraRotationLagSpeed = 14.0f;
+
+	DesiredCameraDistance = DefaultCameraDistance;
 
 	// create the orbiting camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
@@ -90,6 +96,35 @@ void ACombatCharacter::ToggleCamera()
 {
 	// call the BP hook
 	BP_ToggleCamera();
+}
+
+void ACombatCharacter::ZoomAxis(float AxisValue)
+{
+	if (!FMath::IsNearlyZero(AxisValue))
+	{
+		// Mouse wheel: positive scroll = zoom in (shorter arm)
+		ApplyZoomDelta(-AxisValue * ZoomStep);
+	}
+}
+
+void ACombatCharacter::ZoomIn()
+{
+	ApplyZoomDelta(-ZoomStep);
+}
+
+void ACombatCharacter::ZoomOut()
+{
+	ApplyZoomDelta(ZoomStep);
+}
+
+void ACombatCharacter::ApplyZoomDelta(float DeltaCm)
+{
+	if (bCameraZoomLocked || !CameraBoom)
+	{
+		return;
+	}
+
+	DesiredCameraDistance = FMath::Clamp(DesiredCameraDistance + DeltaCm, MinCameraDistance, MaxCameraDistance);
 }
 
 void ACombatCharacter::DoMove(float Right, float Forward)
@@ -417,6 +452,8 @@ void ACombatCharacter::HandleDeath()
 	LifeBar->SetHiddenInGame(true);
 
 	// pull back the camera
+	bCameraZoomLocked = true;
+	DesiredCameraDistance = DeathCameraDistance;
 	GetCameraBoom()->TargetArmLength = DeathCameraDistance;
 
 	// schedule respawning
@@ -493,6 +530,8 @@ void ACombatCharacter::BeginPlay()
 	LifeBarWidget = Cast<UCombatLifeBar>(LifeBar->GetUserWidgetObject());
 
 	// initialize the camera
+	bCameraZoomLocked = false;
+	DesiredCameraDistance = DefaultCameraDistance;
 	GetCameraBoom()->TargetArmLength = DefaultCameraDistance;
 
 	// save the relative transform for the mesh so we can reset the ragdoll later
@@ -505,6 +544,20 @@ void ACombatCharacter::BeginPlay()
 
 	// reset HP to maximum
 	ResetHP();
+}
+
+void ACombatCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (CameraBoom)
+	{
+		CameraBoom->TargetArmLength = FMath::FInterpTo(
+			CameraBoom->TargetArmLength,
+			DesiredCameraDistance,
+			DeltaSeconds,
+			ZoomInterpSpeed);
+	}
 }
 
 void ACombatCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -545,6 +598,15 @@ void ACombatCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		// Camera Side Toggle
 		EnhancedInputComponent->BindAction(ToggleCameraAction, ETriggerEvent::Triggered, this, &ACombatCharacter::ToggleCamera);
 	}
+
+	// Zoom — mouse wheel + keyboard (works alongside Enhanced Input)
+	PlayerInputComponent->BindAxisKey(EKeys::MouseWheelAxis, this, &ACombatCharacter::ZoomAxis);
+	PlayerInputComponent->BindKey(EKeys::Equals, IE_Pressed, this, &ACombatCharacter::ZoomOut);
+	PlayerInputComponent->BindKey(EKeys::Add, IE_Pressed, this, &ACombatCharacter::ZoomOut);
+	PlayerInputComponent->BindKey(EKeys::Hyphen, IE_Pressed, this, &ACombatCharacter::ZoomIn);
+	PlayerInputComponent->BindKey(EKeys::Subtract, IE_Pressed, this, &ACombatCharacter::ZoomIn);
+	PlayerInputComponent->BindKey(EKeys::PageUp, IE_Pressed, this, &ACombatCharacter::ZoomOut);
+	PlayerInputComponent->BindKey(EKeys::PageDown, IE_Pressed, this, &ACombatCharacter::ZoomIn);
 }
 
 void ACombatCharacter::NotifyControllerChanged()
