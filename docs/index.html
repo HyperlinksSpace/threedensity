@@ -40,54 +40,6 @@
     }
     a { color: inherit; }
 
-    /* —— Top bar —— */
-    .topbar {
-      position: fixed;
-      inset: 0 0 auto;
-      z-index: 40;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1.1rem clamp(1.25rem, 4vw, 3rem);
-      background: linear-gradient(180deg, rgba(7,7,8,.72), transparent);
-      backdrop-filter: blur(0px);
-      transition: background .3s ease;
-    }
-    .topbar-brand {
-      display: flex;
-      align-items: center;
-      gap: .75rem;
-      text-decoration: none;
-    }
-    .topbar-brand img {
-      width: 36px;
-      height: auto;
-      filter: drop-shadow(0 0 12px var(--glow));
-    }
-    .topbar-brand span {
-      font-family: "Orbitron", sans-serif;
-      font-size: .72rem;
-      letter-spacing: .22em;
-      text-transform: uppercase;
-      color: var(--steel);
-    }
-    .topbar-cta {
-      font-size: .78rem;
-      font-weight: 600;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      text-decoration: none;
-      color: var(--ink);
-      border: 1px solid rgba(255,122,47,.45);
-      padding: .55rem 1rem;
-      transition: background .2s ease, border-color .2s ease, box-shadow .2s ease;
-    }
-    .topbar-cta:hover {
-      background: rgba(255,122,47,.12);
-      border-color: var(--ember);
-      box-shadow: 0 0 24px var(--glow);
-    }
-
     /* —— Hero —— */
     .hero {
       position: relative;
@@ -387,17 +339,6 @@
       transition: color .2s;
     }
     .footer a:hover { color: var(--ember); }
-    .footer-brand {
-      display: flex;
-      align-items: center;
-      gap: .6rem;
-    }
-    .footer-brand img {
-      width: 28px;
-      height: auto;
-      opacity: .9;
-    }
-
     @media (max-width: 900px) {
       .gallery {
         grid-template-columns: 1fr 1fr;
@@ -412,7 +353,6 @@
       }
       .install-grid { grid-template-columns: 1fr; gap: 1.1rem; }
       .hero-scroll { display: none; }
-      .topbar-brand span { display: none; }
     }
     @media (max-width: 560px) {
       .gallery {
@@ -425,14 +365,6 @@
   </style>
 </head>
 <body>
-  <nav class="topbar">
-    <a class="topbar-brand" href="#">
-      <img src="media/logo.png" width="36" height="30" alt="">
-      <span>Three Density</span>
-    </a>
-    <a class="topbar-cta" href="https://github.com/HyperlinksSpace/threedensity/releases/latest/download/ThreeDensitySetup.exe">Download</a>
-  </nav>
-
   <header class="hero">
     <div class="hero-media" aria-hidden="true">
       <img src="media/shot-combat.jpg" alt="" decoding="async">
@@ -508,10 +440,7 @@
   </section>
 
   <footer class="footer">
-    <div class="footer-brand">
-      <img src="media/logo.png" width="28" height="23" alt="">
-      <span>HyperlinksSpace · Unreal Engine 5.7</span>
-    </div>
+    <span>HyperlinksSpace · Unreal Engine 5.7</span>
     <div>
       <a href="https://github.com/HyperlinksSpace/threedensity">Source</a>
       <a href="https://github.com/HyperlinksSpace/threedensity/releases">Releases</a>
@@ -547,11 +476,7 @@
         .then(function (r) { return r.json(); })
         .then(function (data) {
           const setup = data.assets && data.assets.find(function (a) { return a.name === 'ThreeDensitySetup.exe'; });
-          if (setup) {
-            const url = setup.browser_download_url;
-            document.getElementById('download-btn').href = url;
-            document.querySelectorAll('.topbar-cta').forEach(function (el) { el.href = url; });
-          }
+          if (setup) document.getElementById('download-btn').href = setup.browser_download_url;
         })
         .catch(function () {});
     })();
