@@ -9,9 +9,13 @@
 #include "CombatCharacter.h"
 #include "Engine/LocalPlayer.h"
 #include "Engine/World.h"
+#include "Engine/Engine.h"
+#include "Engine/GameViewportClient.h"
 #include "Blueprint/UserWidget.h"
 #include "TP_ThirdPerson.h"
 #include "Widgets/Input/SVirtualJoystick.h"
+#include "SThreeDensityHUDWidget.h"
+#include "InputCoreTypes.h"
 
 void ACombatPlayerController::BeginPlay()
 {
@@ -35,6 +39,23 @@ void ACombatPlayerController::BeginPlay()
 		}
 
 	}
+
+	if (IsLocalPlayerController() && GEngine && GEngine->GameViewport)
+	{
+		HUDOverlay = SNew(SThreeDensityHUDWidget).Owner(this);
+		GEngine->GameViewport->AddViewportWidgetContent(HUDOverlay.ToSharedRef(), 100);
+		TipTimeRemaining = 6.0f;
+	}
+}
+
+void ACombatPlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (HUDOverlay.IsValid() && GEngine && GEngine->GameViewport)
+	{
+		GEngine->GameViewport->RemoveViewportWidgetContent(HUDOverlay.ToSharedRef());
+	}
+	HUDOverlay.Reset();
+	Super::EndPlay(EndPlayReason);
 }
 
 void ACombatPlayerController::SetupInputComponent()
@@ -61,6 +82,90 @@ void ACombatPlayerController::SetupInputComponent()
 				}
 			}
 		}
+
+		FInputKeyBinding& EscapeBind = InputComponent->BindKey(EKeys::Escape, IE_Pressed, this, &ACombatPlayerController::TogglePauseMenu);
+		EscapeBind.bExecuteWhenPaused = true;
+		FInputKeyBinding& StartBind = InputComponent->BindKey(EKeys::Gamepad_Special_Right, IE_Pressed, this, &ACombatPlayerController::TogglePauseMenu);
+		StartBind.bExecuteWhenPaused = true;
+	}
+}
+
+void ACombatPlayerController::PlayerTick(float DeltaTime)
+{
+	Super::PlayerTick(DeltaTime);
+
+	if (!bTipsFinished && !bPauseMenuOpen)
+	{
+		TipTimeRemaining -= DeltaTime;
+		if (TipTimeRemaining <= 0.0f)
+		{
+			AdvanceOrDismissTip();
+		}
+	}
+}
+
+void ACombatPlayerController::TogglePauseMenu()
+{
+	if (!IsLocalPlayerController())
+	{
+		return;
+	}
+
+	bPauseMenuOpen = !bPauseMenuOpen;
+	if (bPauseMenuOpen)
+	{
+		bHasOpenedMenu = true;
+		MenuTab = 0;
+		SetPause(true);
+		bShowMouseCursor = true;
+		bEnableClickEvents = true;
+		bEnableMouseOverEvents = true;
+		FInputModeGameAndUI Mode;
+		Mode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		Mode.SetHideCursorDuringCapture(false);
+		SetInputMode(Mode);
+	}
+	else
+	{
+		SetPause(false);
+		ApplyMenuInputMode();
+	}
+}
+
+void ACombatPlayerController::ApplyMenuInputMode()
+{
+	bShowMouseCursor = false;
+	FInputModeGameOnly GameOnly;
+	SetInputMode(GameOnly);
+}
+
+void ACombatPlayerController::SetMenuTab(int32 NewTab)
+{
+	MenuTab = NewTab;
+}
+
+void ACombatPlayerController::AdvanceOrDismissTip()
+{
+	++TipIndex;
+	TipTimeRemaining = 6.0f;
+	if (TipIndex >= 4)
+	{
+		bTipsFinished = true;
+	}
+}
+
+FText ACombatPlayerController::GetCurrentTipText() const
+{
+	switch (TipIndex)
+	{
+	case 0:
+		return FText::FromString(TEXT("Move with WASD. Look with the mouse."));
+	case 1:
+		return FText::FromString(TEXT("Left click chains a combo. Hold right click to charge a heavy strike."));
+	case 2:
+		return FText::FromString(TEXT("Space jumps. Q swaps camera shoulder. Watch the lava — it kills."));
+	default:
+		return FText::FromString(TEXT("Press ESC anytime for the full control cookbook and graphics settings."));
 	}
 }
 

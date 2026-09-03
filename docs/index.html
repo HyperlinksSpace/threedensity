@@ -3,258 +3,281 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Three Density — Action Combat Game</title>
-  <meta name="description" content="Three Density — a cinematic third-person combat game built with Unreal Engine 5.7. Download free for Windows.">
+  <title>Three Density</title>
+  <meta name="description" content="Three Density — third-person combat on Unreal Engine 5.7. Download the small installer and play.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #07080f;
-      --surface: #111827;
-      --accent: #7c3aed;
-      --accent2: #06b6d4;
-      --text: #f1f5f9;
-      --muted: #94a3b8;
-      --glow: rgba(124, 58, 237, 0.45);
+      --bg: #0c0c0b;
+      --ink: #f3eee6;
+      --muted: #a8a199;
+      --ember: #e07a32;
+      --ember-deep: #b45316;
+      --steel: #d7d2c8;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
     body {
-      font-family: 'Inter', system-ui, sans-serif;
+      font-family: "Manrope", sans-serif;
       background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      min-height: 100vh;
+      color: var(--ink);
+      line-height: 1.55;
     }
     .hero {
       position: relative;
-      padding: 5rem 1.5rem 4rem;
-      text-align: center;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      align-items: flex-end;
       overflow: hidden;
-      background:
-        radial-gradient(ellipse 80% 60% at 50% -10%, var(--glow), transparent),
-        linear-gradient(180deg, #0f172a 0%, var(--bg) 100%);
+      isolation: isolate;
     }
-    .hero::before {
-      content: '';
+    .hero-media {
       position: absolute;
       inset: 0;
-      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60"><rect width="60" height="60" fill="none" stroke="%231f2937" stroke-width="0.5"/></svg>');
-      opacity: 0.35;
-      mask-image: linear-gradient(to bottom, black, transparent);
+      z-index: -2;
     }
-    .badge {
-      display: inline-block;
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 0.12em;
+    .hero-media img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      animation: ken 28s infinite;
+      transform: scale(1.08);
+    }
+    .hero-media img:nth-child(1) { animation-name: kenA; }
+    .hero-media img:nth-child(2) { animation-name: kenB; animation-delay: 7s; }
+    .hero-media img:nth-child(3) { animation-name: kenC; animation-delay: 14s; }
+    .hero-media img:nth-child(4) { animation-name: kenD; animation-delay: 21s; }
+    @keyframes kenA {
+      0%, 22% { opacity: 1; transform: scale(1.08) translate3d(0,0,0); }
+      28%, 100% { opacity: 0; transform: scale(1.16) translate3d(-1%, -1%, 0); }
+    }
+    @keyframes kenB {
+      0%, 22% { opacity: 0; }
+      25%, 47% { opacity: 1; transform: scale(1.08); }
+      53%, 100% { opacity: 0; transform: scale(1.14) translate3d(1%,0,0); }
+    }
+    @keyframes kenC {
+      0%, 47% { opacity: 0; }
+      50%, 72% { opacity: 1; transform: scale(1.1); }
+      78%, 100% { opacity: 0; transform: scale(1.18); }
+    }
+    @keyframes kenD {
+      0%, 72% { opacity: 0; }
+      75%, 97% { opacity: 1; transform: scale(1.07); }
+      100% { opacity: 0; transform: scale(1.14); }
+    }
+    .hero-fade {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background:
+        linear-gradient(90deg, rgba(12,12,11,.88) 0%, rgba(12,12,11,.35) 48%, rgba(12,12,11,.15) 100%),
+        linear-gradient(0deg, rgba(12,12,11,.95) 0%, rgba(12,12,11,.2) 42%, transparent 70%);
+    }
+    .hero-copy {
+      width: min(720px, 100%);
+      padding: 0 1.5rem 4.5rem;
+      animation: rise .9s ease-out both;
+    }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: none; }
+    }
+    .brand {
+      font-family: "Oswald", sans-serif;
+      font-weight: 700;
+      font-size: clamp(3.4rem, 10vw, 6.5rem);
+      letter-spacing: .04em;
+      line-height: .92;
       text-transform: uppercase;
-      color: var(--accent2);
-      border: 1px solid rgba(6, 182, 212, 0.35);
-      padding: 0.35rem 0.85rem;
-      border-radius: 999px;
-      margin-bottom: 1.25rem;
-      position: relative;
+      color: var(--ink);
+      text-shadow: 0 10px 40px rgba(0,0,0,.55);
     }
-    h1 {
-      font-family: 'Orbitron', sans-serif;
-      font-size: clamp(2.5rem, 8vw, 4.5rem);
-      font-weight: 900;
-      letter-spacing: 0.04em;
-      line-height: 1.05;
-      background: linear-gradient(135deg, #fff 30%, var(--accent2) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      position: relative;
+    .lede {
+      margin-top: 1rem;
+      max-width: 34rem;
+      color: var(--steel);
+      font-size: 1.05rem;
     }
-    .tagline {
-      font-size: 1.15rem;
-      color: var(--muted);
-      max-width: 36rem;
-      margin: 1.25rem auto 2rem;
-      position: relative;
-    }
-    .cta-group {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      flex-wrap: wrap;
-      position: relative;
-    }
-    .btn {
+    .cta {
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      padding: 0.9rem 1.75rem;
-      border-radius: 0.6rem;
-      font-weight: 600;
-      font-size: 1rem;
-      text-decoration: none;
-      transition: transform 0.15s, box-shadow 0.15s;
-    }
-    .btn:hover { transform: translateY(-2px); }
-    .btn-primary {
-      background: linear-gradient(135deg, var(--accent), #5b21b6);
+      gap: .65rem;
+      margin-top: 1.75rem;
+      padding: .95rem 1.6rem;
+      background: linear-gradient(135deg, var(--ember), var(--ember-deep));
       color: #fff;
-      box-shadow: 0 8px 32px var(--glow);
+      text-decoration: none;
+      font-weight: 600;
+      letter-spacing: .02em;
+      transition: transform .18s ease, box-shadow .18s ease;
+      box-shadow: 0 12px 36px rgba(224,122,50,.28);
     }
-    .btn-primary:hover { box-shadow: 0 12px 40px var(--glow); }
-    .btn-secondary {
-      background: var(--surface);
-      color: var(--text);
-      border: 1px solid #334155;
+    .cta:hover { transform: translateY(-2px); box-shadow: 0 16px 42px rgba(224,122,50,.38); }
+    .cta-note {
+      margin-top: .75rem;
+      color: var(--muted);
+      font-size: .9rem;
     }
-    .container { max-width: 960px; margin: 0 auto; padding: 0 1.5rem; }
-    section { padding: 4rem 0; }
+    .cta-note a { color: var(--ember); text-decoration: none; }
+    section {
+      padding: 4.5rem 1.5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
     h2 {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1.5rem;
-      margin-bottom: 1.5rem;
-      color: #e2e8f0;
+      font-family: "Oswald", sans-serif;
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      margin-bottom: .75rem;
     }
-    .features {
+    .section-lede {
+      color: var(--muted);
+      max-width: 38rem;
+      margin-bottom: 1.75rem;
+    }
+    .filmstrip {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 1.25rem;
+      grid-template-columns: 1.4fr 1fr;
+      gap: .75rem;
     }
-    .feature {
-      background: var(--surface);
-      border: 1px solid #1e293b;
-      border-radius: 0.75rem;
-      padding: 1.5rem;
+    .filmstrip img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      min-height: 180px;
+      filter: saturate(1.05) contrast(1.05);
+      transition: transform .45s ease;
     }
-    .feature h3 {
-      font-size: 1rem;
-      margin-bottom: 0.5rem;
-      color: var(--accent2);
-    }
-    .feature p { font-size: 0.9rem; color: var(--muted); }
-    .requirements {
-      background: var(--surface);
-      border-radius: 0.75rem;
-      border: 1px solid #1e293b;
+    .filmstrip a {
       overflow: hidden;
+      display: block;
+      background: #161513;
     }
-    .requirements table { width: 100%; border-collapse: collapse; }
-    .requirements th, .requirements td {
-      padding: 0.85rem 1.25rem;
-      text-align: left;
-      border-bottom: 1px solid #1e293b;
-      font-size: 0.9rem;
-    }
-    .requirements th { color: var(--muted); font-weight: 500; width: 30%; }
-    .requirements tr:last-child td, .requirements tr:last-child th { border-bottom: none; }
-    .install-steps {
+    .filmstrip a:hover img { transform: scale(1.04); }
+    .filmstrip .tall { grid-row: span 2; min-height: 420px; }
+    .steps {
       counter-reset: step;
       list-style: none;
+      display: grid;
+      gap: 1rem;
     }
-    .install-steps li {
+    .steps li {
       counter-increment: step;
-      padding: 1rem 0 1rem 3rem;
+      padding-left: 3.2rem;
       position: relative;
-      border-bottom: 1px solid #1e293b;
       color: var(--muted);
     }
-    .install-steps li:last-child { border-bottom: none; }
-    .install-steps li::before {
+    .steps li::before {
       content: counter(step);
       position: absolute;
       left: 0;
-      top: 1rem;
-      width: 2rem;
-      height: 2rem;
-      background: var(--accent);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 0.85rem;
-      color: #fff;
+      top: 0;
+      width: 2.1rem;
+      height: 2.1rem;
+      border: 1px solid rgba(224,122,50,.55);
+      color: var(--ember);
+      display: grid;
+      place-items: center;
+      font-family: "Oswald", sans-serif;
+      font-size: .95rem;
     }
-    .install-steps strong { color: var(--text); }
-    footer {
-      text-align: center;
-      padding: 2.5rem 1.5rem;
+    .steps strong { color: var(--ink); font-weight: 600; }
+    .specs {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .specs th, .specs td {
+      text-align: left;
+      padding: .85rem 0;
+      border-bottom: 1px solid #24221f;
+      font-size: .95rem;
+    }
+    .specs th {
+      width: 30%;
       color: var(--muted);
-      font-size: 0.85rem;
-      border-top: 1px solid #1e293b;
+      font-weight: 500;
     }
-    footer a { color: var(--accent2); text-decoration: none; }
+    footer {
+      border-top: 1px solid #24221f;
+      padding: 2rem 1.5rem 3rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: .88rem;
+    }
+    footer a { color: var(--ember); text-decoration: none; }
+    @media (max-width: 800px) {
+      .filmstrip { grid-template-columns: 1fr; }
+      .filmstrip .tall { grid-row: auto; min-height: 240px; }
+      .hero-copy { padding-bottom: 3rem; }
+    }
   </style>
 </head>
 <body>
   <header class="hero">
-    <div class="badge">Unreal Engine 5.7 · Windows</div>
-    <h1>THREE DENSITY</h1>
-    <p class="tagline">A cinematic third-person combat action game. Master combos, dodge enemy attacks, and fight through hazardous arenas.</p>
-    <div class="cta-group">
-      <a id="download-btn" class="btn btn-primary" href="https://github.com/HyperlinksSpace/threedensity/releases/latest/download/ThreeDensity-Win64.zip">
-        ⬇ Download for Windows
-      </a>
-      <a class="btn btn-secondary" href="https://github.com/HyperlinksSpace/threedensity">View on GitHub</a>
+    <div class="hero-media" aria-hidden="true">
+      <img src="media/shot-combat.jpg" alt="">
+      <img src="media/shot-arena.jpg" alt="">
+      <img src="media/shot-heavy.jpg" alt="">
+      <img src="media/shot-checkpoint.jpg" alt="">
+    </div>
+    <div class="hero-fade"></div>
+    <div class="hero-copy">
+      <h1 class="brand">Three Density</h1>
+      <p class="lede">Third-person melee combat in a lava-cut arena. Combos, charged strikes, and AI that presses back — built in Unreal Engine 5.7.</p>
+      <a id="download-btn" class="cta" href="https://github.com/HyperlinksSpace/threedensity/releases/latest/download/ThreeDensitySetup.exe">Download installer</a>
+      <p class="cta-note">~15 KB setup · installs the latest build automatically · <a href="https://github.com/HyperlinksSpace/threedensity/releases/latest/download/ThreeDensity-Win64.zip">portable ZIP</a></p>
     </div>
   </header>
 
-  <main class="container">
-    <section>
-      <h2>Features</h2>
-      <div class="features">
-        <div class="feature">
-          <h3>⚔ Melee Combat</h3>
-          <p>Combo attacks, heavy strikes, and responsive dodge mechanics in third-person perspective.</p>
-        </div>
-        <div class="feature">
-          <h3>🤖 Smart AI</h3>
-          <p>Enemies powered by Unreal's State Tree system — they flank, chase, and adapt to your moves.</p>
-        </div>
-        <div class="feature">
-          <h3>✨ UE5 Graphics</h3>
-          <p>Lumen global illumination, virtual shadow maps, and a polished combat arena environment.</p>
-        </div>
-        <div class="feature">
-          <h3>🎮 Full Input</h3>
-          <p>Play with keyboard &amp; mouse or plug in a gamepad — both fully supported.</p>
-        </div>
-      </div>
-    </section>
+  <section>
+    <h2>In the arena</h2>
+    <p class="section-lede">Moments from the combat variant — industrial platforms, lava hazards, and close-range fights.</p>
+    <div class="filmstrip">
+      <a class="tall" href="media/shot-combat.jpg"><img src="media/shot-combat.jpg" alt="Combo fight over the lava arena"></a>
+      <a href="media/shot-heavy.jpg"><img src="media/shot-heavy.jpg" alt="Charged strike impact"></a>
+      <a href="media/shot-checkpoint.jpg"><img src="media/shot-checkpoint.jpg" alt="Checkpoint overlook"></a>
+    </div>
+  </section>
 
-    <section>
-      <h2>Install</h2>
-      <ol class="install-steps">
-        <li>Click <strong>Download for Windows</strong> above to get the latest release ZIP.</li>
-        <li>Extract <strong>ThreeDensity-Win64.zip</strong> to any folder on your PC.</li>
-        <li>Run <strong>Windows/threedensity/Binaries/Win64/threedensity-Win64-Shipping.exe</strong> to play.</li>
-      </ol>
-    </section>
+  <section>
+    <h2>Install</h2>
+    <ol class="steps">
+      <li>Download <strong>ThreeDensitySetup.exe</strong> — a small launcher, not the full game archive.</li>
+      <li>Run it. It pulls the latest release, installs under your user folder, and drops a desktop shortcut.</li>
+      <li>Play. Press <strong>Esc</strong> in-game for the control cookbook and graphics settings. First launch auto-tunes quality to your PC.</li>
+    </ol>
+  </section>
 
-    <section>
-      <h2>System Requirements</h2>
-      <div class="requirements">
-        <table>
-          <tr><th>OS</th><td>Windows 10/11 64-bit</td></tr>
-          <tr><th>CPU</th><td>Quad-core 2.5 GHz or better</td></tr>
-          <tr><th>RAM</th><td>8 GB (16 GB recommended)</td></tr>
-          <tr><th>GPU</th><td>DirectX 12 with 4 GB VRAM (8 GB recommended)</td></tr>
-          <tr><th>Storage</th><td>4 GB available space</td></tr>
-        </table>
-      </div>
-    </section>
-  </main>
+  <section>
+    <h2>System</h2>
+    <table class="specs">
+      <tr><th>OS</th><td>Windows 10 / 11 64-bit</td></tr>
+      <tr><th>CPU</th><td>Quad-core 2.5 GHz+</td></tr>
+      <tr><th>RAM</th><td>8 GB (16 GB recommended)</td></tr>
+      <tr><th>GPU</th><td>DirectX 12 · 4 GB VRAM+</td></tr>
+      <tr><th>Storage</th><td>~1 GB after install</td></tr>
+    </table>
+  </section>
 
   <footer>
-  <p>Built by <a href="https://github.com/HyperlinksSpace">HyperlinksSpace</a> · Powered by Unreal Engine 5.7</p>
-  <p style="margin-top:0.5rem"><a href="https://github.com/HyperlinksSpace/threedensity/releases">All releases</a></p>
+    <p><a href="https://github.com/HyperlinksSpace/threedensity">Source</a> · <a href="https://github.com/HyperlinksSpace/threedensity/releases">Releases</a> · HyperlinksSpace · Unreal Engine 5.7</p>
   </footer>
 
   <script>
-    // Resolve latest release download URL dynamically
     fetch('https://api.github.com/repos/HyperlinksSpace/threedensity/releases/latest')
       .then(r => r.json())
       .then(data => {
-        const asset = data.assets?.find(a => a.name.includes('ThreeDensity') && a.name.endsWith('.zip'));
-        if (asset) document.getElementById('download-btn').href = asset.browser_download_url;
+        const setup = data.assets?.find(a => a.name === 'ThreeDensitySetup.exe');
+        if (setup) document.getElementById('download-btn').href = setup.browser_download_url;
       })
       .catch(() => {});
   </script>

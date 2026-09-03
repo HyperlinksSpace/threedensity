@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "Widgets/SWidget.h"
 #include "CombatPlayerController.generated.h"
 
 class UInputMappingContext;
@@ -48,6 +49,15 @@ protected:
 	/** Transform to respawn the character at. Can be set to create checkpoints */
 	FTransform RespawnTransform;
 
+	TSharedPtr<SWidget> HUDOverlay;
+
+	bool bPauseMenuOpen = false;
+	bool bHasOpenedMenu = false;
+	int32 MenuTab = 0;
+	int32 TipIndex = 0;
+	float TipTimeRemaining = 6.0f;
+	bool bTipsFinished = false;
+
 protected:
 
 	/** Gameplay initialization */
@@ -64,6 +74,16 @@ public:
 	/** Updates the character respawn transform */
 	void SetRespawnTransform(const FTransform& NewRespawn);
 
+	void TogglePauseMenu();
+	void SetMenuTab(int32 NewTab);
+	void AdvanceOrDismissTip();
+
+	bool IsPauseMenuOpen() const { return bPauseMenuOpen; }
+	bool HasOpenedMenuOnce() const { return bHasOpenedMenu; }
+	bool ShouldShowTip() const { return !bTipsFinished; }
+	int32 GetMenuTab() const { return MenuTab; }
+	FText GetCurrentTipText() const;
+
 protected:
 
 	/** Called if the possessed pawn is destroyed */
@@ -72,5 +92,10 @@ protected:
 
 	/** Returns true if the player should use UMG touch controls */
 	bool ShouldUseTouchControls() const;
+
+	virtual void PlayerTick(float DeltaTime) override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+	void ApplyMenuInputMode();
 
 };

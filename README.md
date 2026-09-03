@@ -1,12 +1,34 @@
 # Three Density
 
-**Three Density** is a cinematic third-person combat action game built with **Unreal Engine 5.7**. Fight through enemy waves, master combo attacks, and survive hazardous arenas in a polished UE5 experience.
+**Three Density** is a third-person combat action game built with **Unreal Engine 5.7**. Fight through enemy pressure, master combos and charged strikes, and survive lava arenas.
 
 ## Download
 
-**[Download the latest Windows build](https://github.com/HyperlinksSpace/threedensity/releases/latest/download/ThreeDensity-Win64.zip)**
+**[Download the Windows installer](https://github.com/HyperlinksSpace/threedensity/releases/latest/download/ThreeDensitySetup.exe)** (~15 KB)
 
-Or visit the **[game page](https://hyperlinksspace.github.io/threedensity/)** for screenshots and install instructions.
+The installer fetches the latest full build, installs it, and creates a desktop shortcut.
+
+Game page: **[hyperlinksspace.github.io/threedensity](https://hyperlinksspace.github.io/threedensity/)**
+
+Portable ZIP (optional): [ThreeDensity-Win64.zip](https://github.com/HyperlinksSpace/threedensity/releases/latest/download/ThreeDensity-Win64.zip)
+
+## In-game
+
+- **Esc / Start** — pause menu with full **controls cookbook** and **graphics settings**
+- Onboarding tips appear in the first moments of play
+- First launch **auto-detects your GPU/RAM** and applies Low / Medium / High / Epic (you can retune anytime)
+
+## Controls
+
+| Action | Keyboard | Gamepad |
+|---|---|---|
+| Move | W A S D | Left Stick |
+| Look | Mouse | Right Stick |
+| Jump | Space | A / Cross |
+| Combo attack | Left Mouse | RT / R2 |
+| Charged strike | Hold Right Mouse | Hold RB / R1 |
+| Camera shoulder | Q | LB / L1 |
+| Menu | Esc | Start |
 
 ## System Requirements
 
@@ -16,48 +38,11 @@ Or visit the **[game page](https://hyperlinksspace.github.io/threedensity/)** fo
 | **CPU** | Quad-core 2.5 GHz | 6-core 3.0 GHz |
 | **RAM** | 8 GB | 16 GB |
 | **GPU** | DirectX 12, 4 GB VRAM | DirectX 12, 8 GB VRAM |
-| **Storage** | 4 GB | 4 GB SSD |
-
-## Install & Play
-
-1. Download `ThreeDensity-Win64.zip` from [Releases](https://github.com/HyperlinksSpace/threedensity/releases/latest).
-2. Extract the ZIP to any folder.
-3. Run `Windows/threedensity/Binaries/Win64/threedensity-Win64-Shipping.exe` (or double-click `Windows/threedensity.exe`).
-
-## Controls
-
-| Action | Keyboard | Gamepad |
-|---|---|---|
-| Move | W A S D | Left Stick |
-| Look | Mouse | Right Stick |
-| Jump | Space | A / Cross |
-| Sprint | Left Shift | L3 |
-| Attack | Left Mouse | RT |
-| Combo / Heavy | Right Mouse | RB |
-| Dodge | Left Ctrl | B / Circle |
-
-## Features
-
-- Third-person melee combat with combos and dodge mechanics
-- AI enemies with State Tree behavior
-- Lumen global illumination and Nanite-ready environment
-- Checkpoint system and damageable interactables
-- Gamepad and keyboard/mouse support
+| **Storage** | 1 GB | 1 GB SSD |
 
 ## Build from Source
 
-Requires Unreal Engine 5.7.
-
-```bash
-# Generate project files (right-click threedensity.uproject → Generate VS project files)
-# Or open directly in Unreal Editor 5.7
-
-# Package for Windows (Shipping)
-Engine/Build/BatchFiles/RunUAT.bat BuildCookRun \
-  -project="path/to/threedensity.uproject" \
-  -platform=Win64 -clientconfig=Shipping \
-  -cook -build -stage -pak -archive
-```
+Requires Unreal Engine 5.7. Open `threedensity.uproject`, or package with `RunUAT BuildCookRun`.
 
 ## License
 

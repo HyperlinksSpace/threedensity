@@ -176,7 +176,10 @@ void ACombatCharacter::ResetHP()
 	CurrentHP = MaxHP;
 
 	// update the life bar
-	LifeBarWidget->SetLifePercentage(1.0f);
+	if (LifeBarWidget)
+	{
+		LifeBarWidget->SetLifePercentage(1.0f);
+	}
 }
 
 void ACombatCharacter::ComboAttack()
@@ -456,7 +459,10 @@ float ACombatCharacter::TakeDamage(float Damage, struct FDamageEvent const& Dama
 	else
 	{
 		// update the life bar
-		LifeBarWidget->SetLifePercentage(CurrentHP / MaxHP);
+		if (LifeBarWidget)
+		{
+			LifeBarWidget->SetLifePercentage(CurrentHP / MaxHP);
+		}
 
 		// enable partial ragdoll physics, but keep the pelvis vertical
 		GetMesh()->SetPhysicsBlendWeight(0.5f);
@@ -485,7 +491,6 @@ void ACombatCharacter::BeginPlay()
 
 	// get the life bar from the widget component
 	LifeBarWidget = Cast<UCombatLifeBar>(LifeBar->GetUserWidgetObject());
-	check(LifeBarWidget);
 
 	// initialize the camera
 	GetCameraBoom()->TargetArmLength = DefaultCameraDistance;
@@ -493,8 +498,10 @@ void ACombatCharacter::BeginPlay()
 	// save the relative transform for the mesh so we can reset the ragdoll later
 	MeshStartingTransform = GetMesh()->GetRelativeTransform();
 
-	// set the life bar color
-	LifeBarWidget->SetBarColor(LifeBarColor);
+	if (LifeBarWidget)
+	{
+		LifeBarWidget->SetBarColor(LifeBarColor);
+	}
 
 	// reset HP to maximum
 	ResetHP();
@@ -521,6 +528,12 @@ void ACombatCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ACombatCharacter::Look);
 		EnhancedInputComponent->BindAction(MouseLookAction, ETriggerEvent::Triggered, this, &ACombatCharacter::Look);
+
+		if (JumpAction)
+		{
+			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
+			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		}
 
 		// Combo Attack
 		EnhancedInputComponent->BindAction(ComboAttackAction, ETriggerEvent::Started, this, &ACombatCharacter::ComboAttackPressed);

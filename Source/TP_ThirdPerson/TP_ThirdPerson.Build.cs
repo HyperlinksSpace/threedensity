@@ -18,7 +18,9 @@ public class TP_ThirdPerson : ModuleRules
 			"StateTreeModule",
 			"GameplayStateTreeModule",
 			"UMG",
-			"Slate"
+			"Slate",
+			"SlateCore",
+			"RHI"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });
