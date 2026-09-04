@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Three Density</title>
   <meta name="description" content="Three Density — third-person combat. Download the launcher and play.">
-  <link rel="icon" href="media/favicon.ico?v=5" sizes="any">
-  <link rel="icon" type="image/png" href="media/favicon-32.png?v=5" sizes="32x32">
-  <link rel="icon" type="image/png" href="media/favicon-48.png?v=5" sizes="48x48">
-  <link rel="icon" type="image/png" href="media/icon-192.png?v=5" sizes="192x192">
-  <link rel="apple-touch-icon" href="media/apple-touch-icon.png?v=5" sizes="256x256">
+  <link rel="icon" href="media/favicon.ico?v=6" sizes="any">
+  <link rel="icon" type="image/png" href="media/favicon-32.png?v=6" sizes="32x32">
+  <link rel="icon" type="image/png" href="media/favicon-48.png?v=6" sizes="48x48">
+  <link rel="icon" type="image/png" href="media/icon-192.png?v=6" sizes="192x192">
+  <link rel="apple-touch-icon" href="media/apple-touch-icon.png?v=6" sizes="256x256">
   <link rel="manifest" href="site.webmanifest">
   <meta property="og:title" content="Three Density">
   <meta property="og:description" content="Third-person melee combat in a lava-cut arena. Combos, charged strikes, and AI that presses back.">
@@ -106,6 +106,8 @@
     .hero-copy {
       position: relative;
       width: min(640px, 100%);
+      max-width: 100%;
+      min-width: 0;
       padding: 0 clamp(1.25rem, 4vw, 3rem) clamp(3.5rem, 8vh, 5.5rem);
       animation: rise 1s cubic-bezier(.16,1,.3,1) both;
     }
@@ -142,29 +144,166 @@
       align-items: center;
       gap: 1rem 1.5rem;
       margin-top: 1.85rem;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+    }
+    .cta-fit {
+      display: block;
+      width: fit-content;
+      max-width: 100%;
+      min-width: 0;
+      line-height: 0;
     }
     .cta {
+      --cta-cut: 16px;
+      --cta-pad-y: .55rem;
+      --cta-pad-x: .75rem;
+      --cta-pad-l: .5rem;
+      --cta-gap: .5rem;
+      --cta-icon: 2.15rem;
+      --cta-label-h: 1.85rem;
+      position: relative;
+      isolation: isolate;
       display: inline-flex;
       align-items: center;
-      gap: .7rem;
-      padding: 1rem 1.7rem;
-      background: linear-gradient(135deg, var(--ember), var(--ember-deep));
-      color: #fff;
+      justify-content: flex-start;
+      gap: var(--cta-gap);
+      box-sizing: border-box;
+      width: max-content;
+      min-height: calc(var(--cta-label-h) + (var(--cta-pad-y) * 2));
+      padding: var(--cta-pad-y) var(--cta-pad-x) var(--cta-pad-y) var(--cta-pad-l);
+      color: #f4f1ec;
       text-decoration: none;
-      font-weight: 600;
-      font-size: .92rem;
-      letter-spacing: .06em;
-      text-transform: uppercase;
-      clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
-      box-shadow: 0 14px 40px rgba(255,122,47,.28);
-      transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+      line-height: 1;
+      transform-origin: left center;
+      clip-path: polygon(0 0, calc(100% - var(--cta-cut)) 0, 100% var(--cta-cut), 100% 100%, 0 100%);
+      background-color: #4e4b47;
+      background-image:
+        linear-gradient(180deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,.04) 16%, transparent 40%, transparent 62%, rgba(0,0,0,.55) 100%),
+        linear-gradient(90deg, rgba(0,0,0,.38) 0%, transparent 12%, transparent 88%, rgba(0,0,0,.3) 100%),
+        url("media/cta-metal.png?v=3");
+      background-size: auto, auto, cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      box-shadow:
+        0 18px 40px rgba(0,0,0,.62),
+        0 0 0 1px rgba(200,196,188,.22),
+        0 0 16px rgba(255,122,47,.12),
+        inset 0 2px 0 rgba(255,255,255,.42),
+        inset 0 -3px 0 rgba(0,0,0,.62),
+        inset 3px 0 0 rgba(255,255,255,.12),
+        inset -3px 0 0 rgba(0,0,0,.4),
+        inset 0 -6px 12px rgba(255,100,30,.08);
+      overflow: hidden;
+      transition: filter .2s ease, box-shadow .2s ease;
+    }
+    .cta::before,
+    .cta::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .cta::before {
+      z-index: -1;
+      background:
+        linear-gradient(180deg, transparent 68%, rgba(255,100,30,.08) 100%),
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: .4;
+      mix-blend-mode: soft-light;
+    }
+    .cta::after {
+      z-index: 3;
+      background: linear-gradient(105deg, transparent 18%, rgba(255,255,255,0) 38%, rgba(255,252,245,.42) 48%, rgba(220,210,195,.12) 54%, transparent 66%);
+      transform: translateX(-130%);
+      animation: cta-sheen 5.2s cubic-bezier(.4,0,.2,1) infinite;
+    }
+    .cta-face {
+      position: relative;
+      z-index: 2;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--cta-gap);
+      transform: none;
+    }
+    .cta-icon {
+      width: var(--cta-icon);
+      height: var(--cta-icon);
+      flex: 0 0 var(--cta-icon);
+      display: grid;
+      place-items: center;
+    }
+    .cta-icon img,
+    .cta-label img {
+      display: block;
+      transform: none;
+      animation: none;
+    }
+    .cta-icon img {
+      width: var(--cta-icon);
+      height: var(--cta-icon);
+      object-fit: contain;
+      transform: translateY(-1px);
+      filter:
+        contrast(1.08) brightness(1.02) saturate(.78)
+        drop-shadow(1px 0 0 rgba(0,0,0,.95))
+        drop-shadow(-1px 0 0 rgba(0,0,0,.95))
+        drop-shadow(0 1px 0 rgba(0,0,0,.95))
+        drop-shadow(0 -1px 0 rgba(0,0,0,.95))
+        drop-shadow(0 1px 0 rgba(255,255,255,.45))
+        drop-shadow(0 2px 2px rgba(0,0,0,.6));
+    }
+    .cta-label {
+      display: inline-flex;
+      align-items: center;
+      height: var(--cta-label-h);
+      line-height: 0;
+    }
+    .cta-label img {
+      height: var(--cta-label-h);
+      width: auto;
+      max-width: none;
+      object-fit: contain;
+      object-position: left center;
+      filter:
+        contrast(1.1) brightness(1.03) saturate(.75)
+        drop-shadow(1px 0 0 rgba(0,0,0,.95))
+        drop-shadow(-1px 0 0 rgba(0,0,0,.95))
+        drop-shadow(0 1px 0 rgba(0,0,0,.95))
+        drop-shadow(0 -1px 0 rgba(0,0,0,.95))
+        drop-shadow(0 1px 0 rgba(255,255,255,.42))
+        drop-shadow(0 2px 2px rgba(0,0,0,.6));
     }
     .cta:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 18px 48px rgba(255,122,47,.42);
       filter: brightness(1.05);
+      box-shadow:
+        0 18px 40px rgba(0,0,0,.62),
+        0 0 0 1px rgba(220,214,200,.35),
+        0 0 22px rgba(255,122,47,.18),
+        inset 0 2px 0 rgba(255,255,255,.48),
+        inset 0 -3px 0 rgba(0,0,0,.6),
+        inset 3px 0 0 rgba(255,255,255,.14),
+        inset -3px 0 0 rgba(0,0,0,.38),
+        inset 0 -6px 12px rgba(255,100,30,.1);
     }
-    .cta svg { width: 16px; height: 16px; }
+    .cta:hover::after { animation-duration: 2.8s; }
+    .cta:active {
+      filter: brightness(.96);
+      box-shadow:
+        0 10px 24px rgba(0,0,0,.55),
+        0 0 0 1px rgba(255,180,120,.28),
+        inset 0 3px 8px rgba(0,0,0,.5);
+    }
+    @keyframes cta-sheen {
+      0%, 58% { transform: translateX(-130%); opacity: 0; }
+      62% { opacity: 1; }
+      80% { transform: translateX(130%); opacity: .85; }
+      100% { transform: translateX(130%); opacity: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .cta::after { animation: none; }
+    }
     .cta-note {
       color: var(--muted);
       font-size: .86rem;
@@ -378,6 +517,8 @@
       }
       .install-grid { grid-template-columns: 1fr; gap: 1.1rem; }
       .hero-scroll { display: none; }
+      .hero-copy { width: min(100%, 640px); }
+      .cta-fit { max-width: 100%; }
     }
     @media (max-width: 560px) {
       .gallery {
@@ -385,7 +526,24 @@
         grid-template-rows: none;
       }
       .gallery a { min-height: 200px; }
-      .cta-row { flex-direction: column; align-items: flex-start; }
+      .cta-row {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+        gap: .85rem;
+      }
+      .cta-fit { max-width: 100%; }
+      .cta-note { font-size: .8rem; line-height: 1.45; }
+      .brand-logo { width: min(100%, 92vw); }
+      .lede { font-size: .98rem; }
+      .footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: .85rem;
+      }
+      .footer a { margin-left: 0; margin-right: 1rem; }
+      .specs th { width: 36%; font-size: .72rem; }
+      .specs th, .specs td { padding: .85rem 0; font-size: .9rem; }
     }
   </style>
 </head>
@@ -401,13 +559,21 @@
     <div class="hero-grain" aria-hidden="true"></div>
     <div class="hero-copy">
       <h1 class="sr-only">Three Density</h1>
-      <img class="brand-logo" src="media/logo-lockup.png?v=5" width="520" height="200" alt="Three Density">
+      <img class="brand-logo" src="media/logo-lockup.png?v=6" width="520" height="200" alt="Three Density">
       <p class="lede">Third-person melee combat in a lava-cut arena. Combos, charged strikes, and AI that presses back.</p>
       <div class="cta-row">
-        <a id="download-btn" class="cta" href="https://github.com/HyperlinksSpace/threedensity/releases/latest/download/ThreeDensitySetup.exe">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 19h14"/></svg>
-          Download launcher
-        </a>
+        <div class="cta-fit">
+          <a id="download-btn" class="cta" href="https://github.com/HyperlinksSpace/threedensity/releases/latest/download/ThreeDensitySetup.exe" aria-label="Download launcher">
+            <span class="cta-face">
+              <span class="cta-icon" aria-hidden="true">
+                <img src="media/cta-download-icon.png?v=9" width="112" height="112" alt="">
+              </span>
+              <span class="cta-label">
+                <img src="media/cta-label-metal.png?v=9" width="575" height="60" alt="Download launcher">
+              </span>
+            </span>
+          </a>
+        </div>
         <p class="cta-note">Updates on every launch · <a href="https://github.com/HyperlinksSpace/threedensity/releases/latest/download/ThreeDensity-Win64.zip">portable ZIP</a></p>
       </div>
       <p id="release-meta" class="cta-release">Latest release loading…</p>
@@ -466,7 +632,7 @@
   </section>
 
   <footer class="footer">
-    <span>HyperlinksSpace</span>
+    <a href="https://www.hyperlinks.space/">https://www.hyperlinks.space/</a>
     <div>
       <a href="https://github.com/HyperlinksSpace/threedensity">Source</a>
       <a href="https://github.com/HyperlinksSpace/threedensity/releases">Releases</a>
@@ -497,6 +663,46 @@
       }
 
       window.setInterval(nextSlide, HOLD_MS);
+
+      function fitCta() {
+        var fit = document.querySelector('.cta-fit');
+        var cta = document.getElementById('download-btn');
+        var row = document.querySelector('.cta-row');
+        var copy = document.querySelector('.hero-copy');
+        if (!fit || !cta || !row) return;
+        cta.style.transform = 'none';
+        fit.style.width = '';
+        fit.style.height = '';
+        var natural = cta.offsetWidth;
+        var avail = row.clientWidth;
+        if (copy) {
+          var cs = window.getComputedStyle(copy);
+          var pad = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+          var content = copy.clientWidth - pad;
+          var viewportCap = window.innerWidth - pad;
+          if (content > 0) avail = Math.min(avail, content);
+          if (viewportCap > 0) avail = Math.min(avail, viewportCap);
+        }
+        if (!avail || !natural) return;
+        var scale = Math.min(1, avail / natural);
+        cta.style.transform = 'scale(' + scale + ')';
+        fit.style.width = (natural * scale) + 'px';
+        fit.style.height = (cta.offsetHeight * scale) + 'px';
+      }
+      fitCta();
+      window.addEventListener('resize', fitCta);
+      window.addEventListener('load', fitCta);
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitCta).catch(function () {});
+      Array.prototype.forEach.call(document.querySelectorAll('#download-btn img'), function (img) {
+        if (!img.complete) img.addEventListener('load', fitCta);
+      });
+      if (window.ResizeObserver) {
+        var ro = new ResizeObserver(fitCta);
+        var rowEl = document.querySelector('.cta-row');
+        var copyEl = document.querySelector('.hero-copy');
+        if (rowEl) ro.observe(rowEl);
+        if (copyEl) ro.observe(copyEl);
+      }
 
       fetch('https://api.github.com/repos/HyperlinksSpace/threedensity/releases/latest')
         .then(function (r) { return r.json(); })
