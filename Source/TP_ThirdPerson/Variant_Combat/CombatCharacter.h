@@ -12,6 +12,7 @@
 class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
+class UInputMappingContext;
 struct FInputActionValue;
 class UCombatLifeBar;
 class UWidgetComponent;
@@ -73,6 +74,10 @@ protected:
 	UPROPERTY(EditAnywhere, Category ="Input")
 	UInputAction* ToggleCameraAction;
 
+	/** Runtime IMC that maps Space / gamepad face button to JumpAction (IMC_Combat has no Jump) */
+	UPROPERTY(Transient)
+	TObjectPtr<UInputMappingContext> JumpMappingContext;
+
 	/** Max amount of HP the character will have on respawn */
 	UPROPERTY(EditAnywhere, Category="Damage", meta = (ClampMin = 0, ClampMax = 100))
 	float MaxHP = 5.0f;
@@ -80,6 +85,17 @@ protected:
 	/** Current amount of HP the character has */
 	UPROPERTY(VisibleAnywhere, Category="Damage")
 	float CurrentHP = 0.0f;
+
+	/** Seconds without damage before HP starts regenerating */
+	UPROPERTY(EditAnywhere, Category="Damage|Regen", meta = (ClampMin = 0, ClampMax = 120, Units = "s"))
+	float HealthRegenDelay = 30.0f;
+
+	/** Fraction of MaxHP restored each second while regenerating */
+	UPROPERTY(EditAnywhere, Category="Damage|Regen", meta = (ClampMin = 0, ClampMax = 1))
+	float HealthRegenPercentPerSecond = 0.03f;
+
+	/** World time when the character last took damage */
+	float LastDamageWorldTime = 0.0f;
 
 	/** Life bar widget fill color */
 	UPROPERTY(EditAnywhere, Category="Damage")
@@ -279,6 +295,9 @@ protected:
 	/** Resets the character's current HP to maximum */
 	void ResetHP();
 
+	/** Syncs world / HUD life bars to CurrentHP */
+	void UpdateLifeBarDisplay();
+
 	/** Performs a combo attack */
 	void ComboAttack();
 
@@ -361,7 +380,21 @@ protected:
 	/** Handles possessed initialization */
 	virtual void NotifyControllerChanged() override;
 
+	/** Maps Space / gamepad A onto JumpAction through Enhanced Input */
+	void EnsureJumpInputMapping();
+
 public:
+
+	/** Space / jump pressed */
+	void JumpPressed();
+
+	/** Space / jump released */
+	void JumpReleased();
+
+	/** Current / max HP for HUD */
+	float GetCurrentHP() const { return CurrentHP; }
+	float GetMaxHP() const { return MaxHP; }
+	float GetHPPercent() const { return MaxHP > 0.0f ? FMath::Clamp(CurrentHP / MaxHP, 0.0f, 1.0f) : 0.0f; }
 
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }

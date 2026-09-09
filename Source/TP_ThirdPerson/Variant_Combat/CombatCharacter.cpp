@@ -10,6 +10,8 @@
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "InputMappingContext.h"
+#include "InputAction.h"
 #include "CombatLifeBar.h"
 #include "Engine/DamageEvents.h"
 #include "TimerManager.h"
@@ -17,6 +19,7 @@
 #include "CombatPlayerController.h"
 #include "InputCoreTypes.h"
 #include "Components/InputComponent.h"
+#include "GameFramework/PlayerController.h"
 
 ACombatCharacter::ACombatCharacter()
 {
@@ -30,6 +33,9 @@ ACombatCharacter::ACombatCharacter()
 
 	// Configure character movement
 	GetCharacterMovement()->MaxWalkSpeed = 400.0f;
+	GetCharacterMovement()->JumpZVelocity = 700.0f;
+	GetCharacterMovement()->AirControl = 0.35f;
+	GetCharacterMovement()->NavAgentProps.bCanJump = true;
 
 	// create the camera boom
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -210,10 +216,14 @@ void ACombatCharacter::ResetHP()
 	// reset the current HP total
 	CurrentHP = MaxHP;
 
-	// update the life bar
-	if (LifeBarWidget)
+	UpdateLifeBarDisplay();
+}
+
+void ACombatCharacter::UpdateLifeBarDisplay()
+{
+	if (LifeBarWidget && MaxHP > 0.0f)
 	{
-		LifeBarWidget->SetLifePercentage(1.0f);
+		LifeBarWidget->SetLifePercentage(FMath::Clamp(CurrentHP / MaxHP, 0.0f, 1.0f));
 	}
 }
 
@@ -462,7 +472,13 @@ void ACombatCharacter::HandleDeath()
 
 void ACombatCharacter::ApplyHealing(float Healing, AActor* Healer)
 {
-	// stub
+	if (Healing <= 0.0f || CurrentHP <= 0.0f || CurrentHP >= MaxHP)
+	{
+		return;
+	}
+
+	CurrentHP = FMath::Min(MaxHP, CurrentHP + Healing);
+	UpdateLifeBarDisplay();
 }
 
 void ACombatCharacter::NotifyDanger(const FVector& DangerLocation, AActor* DangerSource)
@@ -486,6 +502,7 @@ float ACombatCharacter::TakeDamage(float Damage, struct FDamageEvent const& Dama
 
 	// reduce the current HP
 	CurrentHP -= Damage;
+	LastDamageWorldTime = GetWorld()->GetTimeSeconds();
 
 	// have we run out of HP?
 	if (CurrentHP <= 0.0f)
@@ -495,11 +512,7 @@ float ACombatCharacter::TakeDamage(float Damage, struct FDamageEvent const& Dama
 	}
 	else
 	{
-		// update the life bar
-		if (LifeBarWidget)
-		{
-			LifeBarWidget->SetLifePercentage(CurrentHP / MaxHP);
-		}
+		UpdateLifeBarDisplay();
 
 		// enable partial ragdoll physics, but keep the pelvis vertical
 		GetMesh()->SetPhysicsBlendWeight(0.5f);
@@ -544,11 +557,29 @@ void ACombatCharacter::BeginPlay()
 
 	// reset HP to maximum
 	ResetHP();
+
+	LastDamageWorldTime = GetWorld()->GetTimeSeconds();
+
+	// IMC_Combat has no Jump mapping — install Space / gamepad A as soon as we exist
+	EnsureJumpInputMapping();
 }
 
 void ACombatCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+
+	// Reliable Space jump even when Enhanced Input / IMC_Combat omit Jump
+	if (APlayerController* PC = Cast<APlayerController>(GetController()))
+	{
+		if (PC->WasInputKeyJustPressed(EKeys::SpaceBar) || PC->WasInputKeyJustPressed(EKeys::Gamepad_FaceButton_Bottom))
+		{
+			JumpPressed();
+		}
+		if (PC->WasInputKeyJustReleased(EKeys::SpaceBar) || PC->WasInputKeyJustReleased(EKeys::Gamepad_FaceButton_Bottom))
+		{
+			JumpReleased();
+		}
+	}
 
 	if (CameraBoom)
 	{
@@ -557,6 +588,17 @@ void ACombatCharacter::Tick(float DeltaSeconds)
 			DesiredCameraDistance,
 			DeltaSeconds,
 			ZoomInterpSpeed);
+	}
+
+	// Out-of-combat regen: after HealthRegenDelay with no damage, restore ~3% MaxHP / sec
+	if (CurrentHP > 0.0f && CurrentHP < MaxHP && MaxHP > 0.0f && HealthRegenPercentPerSecond > 0.0f)
+	{
+		const float TimeSinceDamage = GetWorld()->GetTimeSeconds() - LastDamageWorldTime;
+		if (TimeSinceDamage >= HealthRegenDelay)
+		{
+			CurrentHP = FMath::Min(MaxHP, CurrentHP + (MaxHP * HealthRegenPercentPerSecond * DeltaSeconds));
+			UpdateLifeBarDisplay();
+		}
 	}
 }
 
@@ -568,9 +610,71 @@ void ACombatCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	GetWorld()->GetTimerManager().ClearTimer(RespawnTimer);
 }
 
+void ACombatCharacter::JumpPressed()
+{
+	if (CurrentHP > 0.0f)
+	{
+		Jump();
+	}
+}
+
+void ACombatCharacter::JumpReleased()
+{
+	StopJumping();
+}
+
+void ACombatCharacter::EnsureJumpInputMapping()
+{
+	// Prefer project IA_Jump; otherwise own a runtime action (Content/Input may be missing)
+	if (!JumpAction)
+	{
+		JumpAction = LoadObject<UInputAction>(nullptr, TEXT("/Game/Input/Actions/IA_Jump.IA_Jump"));
+	}
+	if (!JumpAction)
+	{
+		JumpAction = NewObject<UInputAction>(this, TEXT("RuntimeJumpAction"));
+		JumpAction->ValueType = EInputActionValueType::Boolean;
+	}
+
+	GetCharacterMovement()->NavAgentProps.bCanJump = true;
+	GetCharacterMovement()->JumpZVelocity = FMath::Max(GetCharacterMovement()->JumpZVelocity, 700.0f);
+
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	if (!PC || !PC->IsLocalController())
+	{
+		return;
+	}
+
+	ULocalPlayer* LocalPlayer = PC->GetLocalPlayer();
+	if (!LocalPlayer)
+	{
+		return;
+	}
+
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(LocalPlayer);
+	if (!Subsystem)
+	{
+		return;
+	}
+
+	if (!JumpMappingContext)
+	{
+		JumpMappingContext = NewObject<UInputMappingContext>(this, TEXT("RuntimeJumpIMC"));
+		JumpMappingContext->MapKey(JumpAction, EKeys::SpaceBar);
+		JumpMappingContext->MapKey(JumpAction, EKeys::Gamepad_FaceButton_Bottom);
+	}
+
+	// Priority above default combat IMC so Space always reaches jump
+	Subsystem->RemoveMappingContext(JumpMappingContext);
+	Subsystem->AddMappingContext(JumpMappingContext, 1);
+}
+
 void ACombatCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	// Make sure Space is mapped before binding the jump action
+	EnsureJumpInputMapping();
 
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
@@ -584,8 +688,8 @@ void ACombatCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 		if (JumpAction)
 		{
-			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
-			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACombatCharacter::JumpPressed);
+			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACombatCharacter::JumpReleased);
 		}
 
 		// Combo Attack
@@ -598,6 +702,12 @@ void ACombatCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		// Camera Side Toggle
 		EnhancedInputComponent->BindAction(ToggleCameraAction, ETriggerEvent::Triggered, this, &ACombatCharacter::ToggleCamera);
 	}
+
+	// Legacy key fallback (same pattern as zoom / pause)
+	PlayerInputComponent->BindKey(EKeys::SpaceBar, IE_Pressed, this, &ACombatCharacter::JumpPressed);
+	PlayerInputComponent->BindKey(EKeys::SpaceBar, IE_Released, this, &ACombatCharacter::JumpReleased);
+	PlayerInputComponent->BindKey(EKeys::Gamepad_FaceButton_Bottom, IE_Pressed, this, &ACombatCharacter::JumpPressed);
+	PlayerInputComponent->BindKey(EKeys::Gamepad_FaceButton_Bottom, IE_Released, this, &ACombatCharacter::JumpReleased);
 
 	// Zoom — mouse wheel + keyboard (works alongside Enhanced Input)
 	PlayerInputComponent->BindAxisKey(EKeys::MouseWheelAxis, this, &ACombatCharacter::ZoomAxis);
@@ -612,6 +722,8 @@ void ACombatCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 void ACombatCharacter::NotifyControllerChanged()
 {
 	Super::NotifyControllerChanged();
+
+	EnsureJumpInputMapping();
 
 	// update the respawn transform on the Player Controller
 	if (ACombatPlayerController* PC = Cast<ACombatPlayerController>(GetController()))
